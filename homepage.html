@@ -37,7 +37,7 @@
       </div>
     </nav>
 
-    <div class="container">
+    <div class="container-fluid bg-dark" style="height: 100vh">
       <div id="todo" class="row">
         <div class="col">Caricamento in corso, attendere!!</div>
       </div>
@@ -67,9 +67,9 @@
           start.innerHTML = "";
           body.forEach(data => {
             const col = document.createElement("div");
-            col.className = "col";
+            col.className = "col-12 col-sm-6 col-md-4 col-lg-3";
             col.innerHTML = `
-            <div class="card">
+            <div class="card mt-5">
                 <img src="${data.imageUrl}" height="200" class="card-img-top" alt="..." />
             <div class="card-body">
                 <h5 class="card-title">${data.name}</h5>
