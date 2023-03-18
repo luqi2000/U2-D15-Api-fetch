@@ -62,7 +62,7 @@
             <div class="mb-3">
               <textarea
                 class="form-control"
-                id="immagine"
+                id="imageUrl"
                 aria-describedby="imageUrl"
                 placeholder="Inserisci Url"
                 required></textarea>
@@ -125,22 +125,30 @@
         const form = document.querySelector("form");
         form.classList.add("validated");
       };
+
       window.onload = async () => {
         if (selectedId) {
           document.getElementById("subtitle").innerText = " — Modifica appuntamento";
           document.getElementById("delete-btn").classList.remove("d-none");
 
           try {
-            const resp = await fetch(endpoint); // fetch di tipo GET su endpoint con id incorporato
+            const resp = await fetch(endpoint, {
+              headers: {
+                Authorization:
+                  "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDE0MzY0NGY4MWI0MjAwMTM5YjI4MGEiLCJpYXQiOjE2NzkwNDYyMTMsImV4cCI6MTY4MDI1NTgxM30.RxYeuOk4I_m-InIxjrQLsaiSDyWW2WUotXDfn3VUgkM",
+                "Content-Type": "application/json"
+              }
+            });
             const appointmentData = await resp.json();
-            const { name, description, price, time } = appointmentData;
+            const { name, description, price, brand, imageUrl } = appointmentData;
 
             document.getElementById("name").value = name;
             document.getElementById("description").value = description;
             document.getElementById("price").value = price;
             document.getElementById("brand").value = brand;
-            document.getElementById("immagine").value = immagine;
+            document.getElementById("imageUrl").value = imageUrl;
 
+            // modifica aspetto del bottone submit
             const sbmtBtn = document.querySelector("button[type='submit']");
             sbmtBtn.classList.remove("btn-primary");
             sbmtBtn.classList.add("btn-success");
@@ -153,31 +161,33 @@
 
       const handleSubmit = async event => {
         event.preventDefault();
-
         const newAppointment = {
           name: document.getElementById("name").value,
-          immagine: document.getElementById("immagine").value,
           description: document.getElementById("description").value,
           price: document.getElementById("price").value,
-          brand: document.getElementById("brand").value
+
+          brand: document.getElementById("brand").value,
+
+          imageUrl: document.getElementById("imageUrl").value
         };
 
-        console.log("new product", newAppointment);
+        console.log("HERE ON SUBMIT", newAppointment);
 
         try {
+          isLoading(true);
+
           const resp = await fetch(endpoint, {
             method,
             body: JSON.stringify(newAppointment),
             headers: {
               Authorization:
-                "Bearer [eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDE0MzY0NGY4MWI0MjAwMTM5YjI4MGEiLCJpYXQiOjE2NzkwNDYyMTMsImV4cCI6MTY4MDI1NTgxM30.RxYeuOk4I_m-InIxjrQLsaiSDyWW2WUotXDfn3VUgkM]",
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDE0MzY0NGY4MWI0MjAwMTM5YjI4MGEiLCJpYXQiOjE2NzkwNDYyMTMsImV4cCI6MTY4MDI1NTgxM30.RxYeuOk4I_m-InIxjrQLsaiSDyWW2WUotXDfn3VUgkM",
               "Content-Type": "application/json"
             }
           });
 
           if (resp.ok) {
             const newAppObj = await resp.json();
-
             if (selectedId) {
               alert("Risorsa con l'id " + newAppObj._id + ", modificata con successo");
             } else {
@@ -188,6 +198,44 @@
           }
         } catch (error) {
           alert(error);
+        } finally {
+          isLoading(false);
+        }
+      };
+
+      //bottone delete visibile solo nel momento in cui vado a fare una modifica
+      const handleDelete = async () => {
+        isLoading(true);
+        const hasAccepted = confirm("Sei convinto di voler elimilare l'appuntamento?");
+        if (hasAccepted) {
+          try {
+            console.log("DELETE");
+            const resp = await fetch(endpoint, {
+              method: "DELETE",
+              headers: {
+                Authorization:
+                  "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDE0MzY0NGY4MWI0MjAwMTM5YjI4MGEiLCJpYXQiOjE2NzkwNDYyMTMsImV4cCI6MTY4MDI1NTgxM30.RxYeuOk4I_m-InIxjrQLsaiSDyWW2WUotXDfn3VUgkM",
+                "Content-Type": "application/json"
+              }
+            });
+            const deletedObj = await resp.json();
+
+            alert("Hai eliminato l'appuntamento " + deletedObj.name);
+            window.location.assign("homepage.html");
+          } catch (error) {
+            console.log(error);
+          } finally {
+            isLoading(false);
+          }
+        }
+      };
+
+      const isLoading = loadingState => {
+        const spinner = document.querySelector(".spinner-border");
+        if (loadingState) {
+          spinner.classList.remove("d-none");
+        } else {
+          spinner.classList.add("d-none");
         }
       };
     </script>
