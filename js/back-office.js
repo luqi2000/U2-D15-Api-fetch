@@ -91,7 +91,7 @@ const handleSubmit = async event => {
 //bottone delete visibile solo nel momento in cui vado a fare una modifica
 const handleDelete = async () => {
   isLoading(true);
-  const hasAccepted = confirm("Sei convinto di voler elimilare l'appuntamento?");
+  const hasAccepted = confirm("Sei convinto di voler eliminare il prodotto?");
   if (hasAccepted) {
     try {
       console.log("DELETE");
@@ -105,7 +105,7 @@ const handleDelete = async () => {
       });
       const deletedObj = await resp.json();
 
-      alert("Hai eliminato l'appuntamento " + deletedObj.name);
+      alert("Hai eliminato il prodotto " + deletedObj.name);
       window.location.assign("homepage.html");
     } catch (error) {
       console.log(error);
